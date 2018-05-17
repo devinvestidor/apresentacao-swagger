@@ -14,28 +14,43 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path("/crude")
-public class ServiceCrude {
+@Path("/usuario")
+public class ServiceUsuario {
 
 	static List<String> pessoas = new ArrayList<String>();
 
-	@DELETE
-	@Path("/delete")
-	@Produces(MediaType.TEXT_PLAIN + "; charset=UTF-8")
-	public Response delete(String nome) {
+	@GET
+	@Path("/nome/{nome}")
+	public Response buscarPorNome(@PathParam("nome") String nome) {
 		for (int i = 0; i < pessoas.size(); i++) {
 			if (pessoas.get(i).equals(nome)) {
-				pessoas.remove(i);
+				return Response.status(200).entity(pessoas.get(i)).build();
 			}
 		}
+		return Response.status(200).entity("Pessoa não encontrada").build();
+	}
 
+	@GET
+	@Produces(MediaType.TEXT_PLAIN + "; charset=UTF-8")
+	@Path("/buscar")
+	public Response buscarPorParametro(@QueryParam("nome") String nome) {
+		for (int i = 0; i < pessoas.size(); i++) {
+			if (pessoas.get(i).equals(nome)) {
+				return Response.status(200).entity(pessoas.get(i)).build();
+			}
+		}
+		return Response.status(200).entity("Pessoa não encontrada").build();
+	}
+
+	@GET
+	@Produces(MediaType.TEXT_PLAIN + "; charset=UTF-8")
+	public Response buscarTodos() {
 		return Response.status(200).entity(pessoas).build();
 	}
 
 	@PUT
-	@Path("/edit")
 	@Produces(MediaType.TEXT_PLAIN + "; charset=UTF-8")
-	public Response edit(String objeto) {
+	public Response editar(String objeto) {
 
 		String array[] = objeto.split(";");
 		String nomeAntigo = array[0];
@@ -50,41 +65,23 @@ public class ServiceCrude {
 		return Response.status(200).entity(pessoas).build();
 	}
 
-	@POST
-	@Path("/insert")
+	@DELETE
 	@Produces(MediaType.TEXT_PLAIN + "; charset=UTF-8")
-	public Response insert(String nome) {
+	public Response excluir(String nome) {
+		for (int i = 0; i < pessoas.size(); i++) {
+			if (pessoas.get(i).equals(nome)) {
+				pessoas.remove(i);
+			}
+		}
+
+		return Response.status(200).entity(pessoas).build();
+	}
+
+	@POST
+	@Produces(MediaType.TEXT_PLAIN + "; charset=UTF-8")
+	public Response inserir(String nome) {
 		pessoas.add(nome);
 		return Response.status(200).entity(pessoas).build();
-	}
-
-	@GET
-	@Path("/select")
-	@Produces(MediaType.TEXT_PLAIN + "; charset=UTF-8")
-	public Response select() {
-		return Response.status(200).entity(pessoas).build();
-	}
-
-	@GET
-	@Path("/select_nome_path/{nome}")
-	public Response selectNomePath(@PathParam("nome") String nome) {
-		for (int i = 0; i < pessoas.size(); i++) {
-			if (pessoas.get(i).equals(nome)) {
-				return Response.status(200).entity(pessoas.get(i)).build();
-			}
-		}
-		return Response.status(200).entity("Pessoa não encontrada").build();
-	}
-
-	@GET
-	@Path("/select_nome_query")
-	public Response selectNomeQuery(@QueryParam("nome") String nome) {
-		for (int i = 0; i < pessoas.size(); i++) {
-			if (pessoas.get(i).equals(nome)) {
-				return Response.status(200).entity(pessoas.get(i)).build();
-			}
-		}
-		return Response.status(200).entity("Pessoa não encontrada").build();
 	}
 
 }
