@@ -10,36 +10,31 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import br.com.karanalpe.swagger.model.Aluno;
 
 @Path("/aluno")
 public class ServiceAluno {
 
-	static List<String> alunos = new ArrayList<String>();
+	static List<Aluno> alunos = new ArrayList<Aluno>();
 
-	@GET
-	@Path("/nome/{nome}")
-	public Response buscarPorNome(@PathParam("nome") String nome) {
-		for (int i = 0; i < alunos.size(); i++) {
-			if (alunos.get(i).equals(nome)) {
-				return Response.status(200).entity(alunos.get(i)).build();
-			}
+	public ServiceAluno() {
+		if (alunos.isEmpty()) {
+			alunos.add(new Aluno(1L, "Rodrigo"));
+			alunos.add(new Aluno(2L, "Karan"));
+			alunos.add(new Aluno(3L, "Fernando"));
+			alunos.add(new Aluno(4L, "Sandro"));
+			alunos.add(new Aluno(5L, "Luiz"));
 		}
-		return Response.status(200).entity("Pessoa não encontrada").build();
 	}
 
 	@GET
-	@Produces(MediaType.TEXT_PLAIN + "; charset=UTF-8")
-	@Path("/buscar")
-	public Response buscarPorParametro(@QueryParam("nome") String nome) {
-		for (int i = 0; i < alunos.size(); i++) {
-			if (alunos.get(i).equals(nome)) {
-				return Response.status(200).entity(alunos.get(i)).build();
-			}
-		}
-		return Response.status(200).entity("Pessoa não encontrada").build();
+	@Path("/{id}")
+	public Response buscarPorId(@PathParam("id") Long id) {
+		Aluno aluno = alunos.stream().filter(x -> x.getId().equals(id)).findFirst().orElse(null);
+		return aluno != null ? Response.status(200).entity(aluno.toString()).build() : Response.status(200).entity("Aluno não encontrado").build();
 	}
 
 	@GET
@@ -50,38 +45,47 @@ public class ServiceAluno {
 
 	@PUT
 	@Produces(MediaType.TEXT_PLAIN + "; charset=UTF-8")
-	public Response editar(String objeto) {
+	@Path("/{id}")
+	public Response editar(@PathParam("id") Long id, Aluno aluno) {
+		Response response = Response.status(200).entity("Aluno não encontrado").build();
+		Aluno alunoEditar = alunos.stream().filter(x -> x.getId().equals(id)).findFirst().orElse(null);
 
-		String array[] = objeto.split(";");
-		String nomeAntigo = array[0];
-		String nomeNovo = array[1];
-
-		for (int i = 0; i < alunos.size(); i++) {
-			if (alunos.get(i).equals(nomeAntigo)) {
-				alunos.set(i, nomeNovo);
-			}
+		if (alunoEditar != null) {
+			alunos.remove(alunoEditar);
+			alunoEditar.setNome(aluno.getNome());
+			alunos.add(alunoEditar);
+			response = Response.status(200).entity(alunos).build();
 		}
 
-		return Response.status(200).entity(alunos).build();
+		return response;
 	}
 
 	@DELETE
 	@Produces(MediaType.TEXT_PLAIN + "; charset=UTF-8")
-	public Response excluir(String nome) {
-		for (int i = 0; i < alunos.size(); i++) {
-			if (alunos.get(i).equals(nome)) {
-				alunos.remove(i);
-			}
+	@Path("/{id}")
+	public Response excluir(@PathParam("id") Long id) {
+		Response response = Response.status(200).entity("Aluno não encontrado").build();
+		Aluno aluno = alunos.stream().filter(x -> x.getId().equals(id)).findFirst().orElse(null);
+
+		if (aluno != null) {
+			alunos.remove(aluno);
+			response = Response.status(200).entity(alunos).build();
 		}
 
-		return Response.status(200).entity(alunos).build();
+		return response;
+	}
+
+	private long getProximoId() {
+		return alunos.get(alunos.size() - 1).getId() + 1;
 	}
 
 	@POST
 	@Produces(MediaType.TEXT_PLAIN + "; charset=UTF-8")
-	public Response inserir(String nome) {
-		alunos.add(nome);
-		return Response.status(200).entity(alunos).build();
+	public Response inserir(Aluno aluno) {
+		aluno.setId(getProximoId());
+		alunos.add(aluno);
+
+		return Response.status(200).entity(alunos.toString()).build();
 	}
 
 }
