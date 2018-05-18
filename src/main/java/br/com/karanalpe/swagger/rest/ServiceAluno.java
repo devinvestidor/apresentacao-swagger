@@ -37,25 +37,27 @@ public class ServiceAluno {
 
 	@GET
 	@Path("/{id}")
-	@Produces(MediaType.TEXT_PLAIN + "; charset=UTF-8")
+	@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 	@ApiOperation(value = "Buscar aluno por ID")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 204, message = "Nenhum conteúdo") })
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "OK", response = Aluno.class),
+			@ApiResponse(code = 204, message = "Nenhum conteúdo") })
 	public Response buscarPorId(@PathParam("id") Long id) {
 		Aluno aluno = alunos.stream().filter(x -> x.getId().equals(id)).findFirst().orElse(null);
-		return aluno != null ? Response.status(200).entity(aluno.toString()).build() : Response.status(204).entity("Aluno não encontrado").build();
+
+		return aluno != null ? Response.status(200).entity(aluno).build() : Response.status(204).build();
 	}
 
 	@GET
-	@Produces(MediaType.TEXT_PLAIN + "; charset=UTF-8")
+	@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 	@ApiOperation(value = "Buscar todos alunos")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 204, message = "Nenhum conteúdo") })
 	public Response buscarTodos() {
-		return alunos.size() != 0 ? Response.status(200).entity(alunos).build() : Response.status(204).entity("Nenhum aluno encontrado").build();
+		return alunos.size() != 0 ? Response.status(200).entity(alunos).build() : Response.status(204).build();
 	}
 
 	@PUT
 	@Path("/{id}")
-	@Produces(MediaType.TEXT_PLAIN + "; charset=UTF-8")
+	@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 	@ApiOperation(value = "Editar aluno por ID")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 204, message = "Nenhum conteúdo") })
 	public Response editar(@PathParam("id") Long id, Aluno aluno) {
@@ -74,7 +76,7 @@ public class ServiceAluno {
 
 	@DELETE
 	@Path("/{id}")
-	@Produces(MediaType.TEXT_PLAIN + "; charset=UTF-8")
+	@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 	@ApiOperation(value = "Excluir aluno por ID")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "OK"), @ApiResponse(code = 204, message = "Nenhum conteúdo") })
 	public Response excluir(@PathParam("id") Long id) {
@@ -94,14 +96,14 @@ public class ServiceAluno {
 	}
 
 	@POST
-	@Produces(MediaType.TEXT_PLAIN + "; charset=UTF-8")
+	@Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 	@ApiOperation(value = "Inserir aluno")
 	@ApiResponses(value = { @ApiResponse(code = 201, message = "Criado"), @ApiResponse(code = 500, message = "Erro interno no servidor") })
 	public Response inserir(Aluno aluno) {
 		aluno.setId(getProximoId());
 		alunos.add(aluno);
 
-		return Response.status(200).entity(alunos.toString()).build();
+		return Response.status(200).entity(alunos).build();
 	}
 
 }
