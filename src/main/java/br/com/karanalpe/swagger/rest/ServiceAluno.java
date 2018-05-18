@@ -14,8 +14,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import br.com.karanalpe.swagger.model.Aluno;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Path("/aluno")
+@Api(value = "Aluno")
 public class ServiceAluno {
 
 	static List<Aluno> alunos = new ArrayList<Aluno>();
@@ -32,6 +35,7 @@ public class ServiceAluno {
 
 	@GET
 	@Path("/{id}")
+	@ApiOperation(value = "Buscar por ID")
 	public Response buscarPorId(@PathParam("id") Long id) {
 		Aluno aluno = alunos.stream().filter(x -> x.getId().equals(id)).findFirst().orElse(null);
 		return aluno != null ? Response.status(200).entity(aluno.toString()).build() : Response.status(200).entity("Aluno não encontrado").build();
@@ -39,6 +43,7 @@ public class ServiceAluno {
 
 	@GET
 	@Produces(MediaType.TEXT_PLAIN + "; charset=UTF-8")
+	@ApiOperation(value = "Buscar todos")
 	public Response buscarTodos() {
 		return Response.status(200).entity(alunos).build();
 	}
@@ -46,6 +51,7 @@ public class ServiceAluno {
 	@PUT
 	@Produces(MediaType.TEXT_PLAIN + "; charset=UTF-8")
 	@Path("/{id}")
+	@ApiOperation(value = "Editar por ID")
 	public Response editar(@PathParam("id") Long id, Aluno aluno) {
 		Response response = Response.status(200).entity("Aluno não encontrado").build();
 		Aluno alunoEditar = alunos.stream().filter(x -> x.getId().equals(id)).findFirst().orElse(null);
@@ -63,6 +69,7 @@ public class ServiceAluno {
 	@DELETE
 	@Produces(MediaType.TEXT_PLAIN + "; charset=UTF-8")
 	@Path("/{id}")
+	@ApiOperation(value = "Excluir por ID")
 	public Response excluir(@PathParam("id") Long id) {
 		Response response = Response.status(200).entity("Aluno não encontrado").build();
 		Aluno aluno = alunos.stream().filter(x -> x.getId().equals(id)).findFirst().orElse(null);
@@ -81,6 +88,7 @@ public class ServiceAluno {
 
 	@POST
 	@Produces(MediaType.TEXT_PLAIN + "; charset=UTF-8")
+	@ApiOperation(value = "Inserir")
 	public Response inserir(Aluno aluno) {
 		aluno.setId(getProximoId());
 		alunos.add(aluno);
