@@ -103,7 +103,7 @@ public class ServiceAluno {
 		aluno.setId(getProximoId());
 		alunos.add(aluno);
 
-		return Response.status(200).entity(alunos).build();
+		return Response.status(201).entity(alunos).build();
 	}
 
 }
